@@ -34,8 +34,7 @@
     "prepare": "npm run build && npm run minify && npm run build-module"
   },
   "dependencies": {
-    "accessor-fn": "^1.2.2",
-    "kapsule": "^1.12.1"
+    "optimization-js": "^1.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.3",
