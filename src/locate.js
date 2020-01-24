@@ -45,7 +45,7 @@ function lse(cA, mode='2d', cons = false) {
 
   const x0 = (mode === '2d' || mode === 'earth')
     ? [p0.x, p0.y]
-    : [p0.x, p0.y.p0.z];
+    : [p0.x, p0.y, p0.z];
 
   const fg1 = mode === 'earth' ? 1 : 0;
 
