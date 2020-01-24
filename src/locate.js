@@ -88,7 +88,7 @@ function lse(cA, mode='2d', cons = false) {
   return new Point(...ans);
 }
 
-function locate(beacons, { mode = '2d', constrain = false }) {
+function locate(beacons, { mode = '2d', constrain = false } = {}) {
   if (mode !== '2d' && mode !== '3d' && mode !== 'earth') {
     throw new Error(`Mode not supported: ${mode}`);
   }
