@@ -1,18 +1,18 @@
-const res = 0.0001;
+const res = 0.0001; // checking accuracy
 
 class Point {
-  constructor(...argv) {
-    const l = argv.length;
+  constructor(...args) {
+    const l = args.length;
 
-    this.dim = l === 1 ? argv[0].length : l;
+    this.dim = l === 1 ? args[0].length : l;
     if (l === 1) {
-      this.x = argv[0][0];
-      this.y = argv[0][1];
-      this.z = this.dim > 2 ? argv[0][2] : 0;
+      this.x = args[0][0];
+      this.y = args[0][1];
+      this.z = this.dim > 2 ? args[0][2] : 0;
     } else {
-      this.x = argv[0];
-      this.y = argv[1];
-      this.z = this.dim > 2 ? argv[2] : 0;
+      this.x = args[0];
+      this.y = args[1];
+      this.z = this.dim > 2 ? args[2] : 0;
     }
   }
 
@@ -49,9 +49,9 @@ class Circle {
     this.r = +r; // num
   }
 
-  touch(o, fg = 0) {
+  touch(o, earthSurface = 0) {
     const d = this.c.dist(o.c);
-    const met = fg === 0
+    const met = !earthSurface
       ? this.r + o.r
       : 180 * (this.r + o.r) / (Earth.R * Math.PI);
 
@@ -66,14 +66,10 @@ class Sphere {
   }
 
   gcd(lon1, lat1, lon2, lat2) {
-    /*
-      Calculate the great circle distance (in meters) between two points
-      on the earth (specified in lng/lat degrees)
-    */
-    const toRad = a => a * Math.PI / 180;
+    // Calculate the great circle distance (in meters) between two points on the earth (specified in lng/lat degrees)
 
-    // convert decimal degrees to radians
-    const [_lon1, _lat1, _lon2, _lat2] = [lon1, lat1, lon2, lat2].map(toRad);
+    // convert to radians
+    const [_lon1, _lat1, _lon2, _lat2] = [lon1, lat1, lon2, lat2].map(a => a * Math.PI / 180);
 
     // haversine formula
     const dlon = _lon2 - _lon1;
@@ -85,6 +81,6 @@ class Sphere {
   }
 }
 
-const Earth = new Sphere(new Point(0, 0, 0), 6378100);
+const Earth = new Sphere(new Point(0, 0, 0), 6378100); // radius in meters
 
 export { Point, Circle, Earth };

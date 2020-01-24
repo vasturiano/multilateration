@@ -5,67 +5,60 @@ import { Earth, Point, Circle } from './geometry';
 
 const sum = vals => vals.reduce((agg, v) => agg + v, 0);
 
-const Norm = (x, y, mode='2d') => {
-  if (mode === '2d') return ((x[0] - y[0]) ** 2 + (x[1] - y[1]) ** 2) ** .5;
-  if (mode === '3d') return ((x[0] - y[0]) ** 2 + (x[1] - y[1]) ** 2 + (x[2] - y[2]) ** 2) ** .5;
-  if (mode === 'earth') return Earth.gcd(x[0], x[1], y[0], y[1]);
+const dist = (a, b, mode='2d') => {
+  if (mode === '2d') return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** .5;
+  if (mode === '3d') return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2) ** .5;
+  if (mode === 'earth') return Earth.gcd(a[0], a[1], b[0], b[1]);
 };
 
-const sumError = (x, c, r, mode) => {
-  const l = c.length;
+const sumErrors = (x, pnts, radii, mode) => {
   let e = 0;
-  for (let i = 0; i < l; i++) {
-    e += (Norm(x, c[i].std(), mode) - r[i]) ** 2;
+  for (let i = 0, l = pnts.length; i < l; i++) {
+    e += (dist(x, pnts[i].std(), mode) - radii[i]) ** 2;
   }
   return e;
 };
 
-const isDisjoint = (cA, fg = 0) => {
-  // does not support sophisticated checking for disjoint area on earth surface models
-  const l = cA.length;
-  for (let i = 0; i < l; i++) {
+const isDisjoint = (circles, isOnEarthSurface) => {
+  // does not support sophisticated checking for disjoint area on earth surface mode
+  for (let i = 0, l = circles.length; i < l; i++) {
     for (let j = i+1; j < l; j++) {
-      if (!cA[j].touch(cA[i], fg)) return true;
+      if (!circles[j].touch(circles[i], isOnEarthSurface)) return true;
     }
   }
   return false;
 };
 
-function lse(cA, mode='2d', cons = false) {
-  const l = cA.length;
-  const r = cA.map(w => w.r);
-  const c = cA.map(w => w.c);
-  const S = sum(r);
-  const W = r.map(w => (S - w) / ((l - 1) * S));
+function lseFind(circles, mode='2d', constrain = false) {
+  const numPnts = circles.length;
+  const radii = circles.map(p => p.r);
+  const pnts = circles.map(p => p.c);
+  const sumR = sum(radii);
+  const weights = radii.map(r => (sumR - r) / ((numPnts - 1) * sumR));
 
-  let p0 = new Point(0, 0, 0); // Initialized point
-  for (let i = 0; i < l; i++) {
-    p0 = p0.sum(W[i]).sum(c[i]);
+  let p0 = new Point(0, 0, 0); // Starting point
+  for (let i = 0; i < numPnts; i++) {
+    p0 = p0.sum(weights[i]).sum(pnts[i]);
   }
 
-  const x0 = (mode === '2d' || mode === 'earth')
-    ? [p0.x, p0.y]
-    : [p0.x, p0.y, p0.z];
+  const x0 = p0.std();
 
-  const fg1 = mode === 'earth' ? 1 : 0;
-
-  let ans;
-  if (cons) {
+  let answer;
+  if (constrain) {
     // console.info('GC-LSE geolocating...');
-    if (!isDisjoint(cA, fg1)) {
-      const constrain = (x, beaconIdx) => r[beaconIdx] - Norm(x, c[beaconIdx].std(), mode);
+    if (!isDisjoint(circles, mode === 'earth')) {
+      const constrainFn = (x, beaconIdx) => radii[beaconIdx] - dist(x, pnts[beaconIdx].std(), mode);
 
-      let x = x0.slice(); // result
-
-      const res = minimize_cobyla(
+      let x = x0.slice(); // mutated result
+      minimize_cobyla(
         (n, m, x, con) => { // objective function
           for (let i = 0; i < m; i++) {
-            con[i] = constrain(x, i); // one constrain per beacon
+            con[i] = constrainFn(x, i); // one constrain per beacon
           }
-          return sumError(x, c, r, mode);
+          return sumErrors(x, pnts, radii, mode);
         },
         x.length, // # vars
-        l, // # constraints
+        numPnts, // # constraints
         x0.slice(), // result
         1, // rhobeg
         1e-5, // rhoend
@@ -73,19 +66,17 @@ function lse(cA, mode='2d', cons = false) {
         1000 // maxfun
       );
 
-      ans = x;
+      answer = x;
     } else {
-      throw new Error('Disjoint');
+      throw new Error('Disjointed beacons', circles);
     }
   } else {
     // console.info('LSE geolocating...');
-
-    const res = minimize_Powell(x => sumError(x, c, r, mode), x0);
-
-    ans = res.argument;
+    const res = minimize_Powell(x => sumErrors(x, pnts, radii, mode), x0);
+    answer = res.argument;
   }
 
-  return new Point(...ans);
+  return new Point(...answer);
 }
 
 function locate(beacons, { mode = '2d', constrain = false } = {}) {
@@ -103,7 +94,7 @@ function locate(beacons, { mode = '2d', constrain = false } = {}) {
     return new Circle(c, distance); // in Earth mode, gcd distances are specified in meters
   });
 
-  const { x, y, z } = lse(circles, mode, constrain);
+  const { x, y, z } = lseFind(circles, mode, constrain);
 
   if (mode === 'earth') {
     let lng = x;
