@@ -1,6 +1,6 @@
 {
   "name": "multilateration",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Locate points according to distributed beacon signals with consistent propagation speeds",
   "license": "MIT",
   "unpkg": "dist/multilateration.min.js",
