@@ -1,0 +1,52 @@
+{
+  "name": "multilateration",
+  "version": "0.1.0",
+  "description": "Locate points according to distributed beacon signals with consistent propagation speeds",
+  "license": "MIT",
+  "unpkg": "dist/multilateration.min.js",
+  "jsdelivr": "dist/multilateration.min.js",
+  "main": "dist/multilateration.common.js",
+  "module": "dist/multilateration.module.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vasturiano/multilateration.git"
+  },
+  "homepage": "https://github.com/vasturiano/multilateration",
+  "keywords": [
+    "",
+    ""
+  ],
+  "author": {
+    "name": "Vasco Asturiano",
+    "url": "http://bl.ocks.org/vasturiano"
+  },
+  "bugs": {
+    "url": "https://github.com/vasturiano/multilateration/issues"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "rimraf dist && rollup -c",
+    "dev": "rollup -c -w",
+    "minify": "terser dist/multilateration.js -o dist/multilateration.min.js -c -m --comments '/Version/'",
+    "build-module": "rollup -c rollup.config.module.js",
+    "prepare": "npm run build && npm run minify && npm run build-module"
+  },
+  "dependencies": {
+    "accessor-fn": "^1.2.2",
+    "kapsule": "^1.12.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "rimraf": "^3.0.0",
+    "rollup": "^1.29.1",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "terser": "^4.6.3"
+  }
+}
