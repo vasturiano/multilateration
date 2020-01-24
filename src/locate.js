@@ -31,7 +31,7 @@ const isDisjoint = (cA, fg = 0) => {
   return false;
 };
 
-function lse(cA, mode='2d', cons = true) {
+function lse(cA, mode='2d', cons = false) {
   const l = cA.length;
   const r = cA.map(w => w.r);
   const c = cA.map(w => w.c);
@@ -88,7 +88,7 @@ function lse(cA, mode='2d', cons = true) {
   return new Point(...ans);
 }
 
-function locate(beacons, { mode = '2d', constrain = true }) {
+function locate(beacons, { mode = '2d', constrain = false }) {
   if (mode !== '2d' && mode !== '3d' && mode !== 'earth') {
     throw new Error(`Mode not supported: ${mode}`);
   }
