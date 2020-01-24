@@ -53,7 +53,7 @@ class Circle {
     const d = this.c.dist(o.c);
     const met = fg === 0
       ? this.r + o.r
-      : 180 * (this.r + o.r) / (EARTH_RADIUS * Math.PI);
+      : 180 * (this.r + o.r) / (Earth.R * Math.PI);
 
     return d < (met + res);
   }
@@ -81,10 +81,10 @@ class Sphere {
     const a = Math.sin(dlat / 2) ** 2 + Math.cos(_lat1) * Math.cos(_lat2) * Math.sin(dlon / 2) ** 2;
     const c = 2 * Math.asin(Math.sqrt(a));
 
-    return E.R * c;
+    return Earth.R * c;
   }
 }
 
-const E = new Sphere(new Point(0, 0, 0), 6378100);
+const Earth = new Sphere(new Point(0, 0, 0), 6378100);
 
-export { Point, Circle, E };
+export { Point, Circle, Earth };
