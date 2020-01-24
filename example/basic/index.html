@@ -1,0 +1,33 @@
+<script src="//unpkg.com/multilateration"></script>
+<!--<script src="../../dist/multilateration.js"></script>-->
+
+<script>
+  console.log(
+    locate([
+      { x: 0, y: 100, distance: 80 },
+      { x: 100, y: 100, distance: 80 },
+      { x: 100, y: 0, distance: 80 }
+    ]),
+
+    locate(
+      [
+        { x: 0, y: 100, z: 300, distance: 80 },
+        { x: 100, y: 100, z: 350, distance: 160 },
+        { x: 100, y: 0, z: 260, distance: 20 },
+        { x: 120, y: 50, z: 210, distance: 70 },
+        { x: 60, y: 50, z: 240, distance: 90 },
+        { x: 32, y: 100, z: 260, distance: 100 }
+      ],
+      { mode: '3d' }
+    ),
+
+    locate(
+      [
+        { lat: 76, lng: 32, distance: 1e5 },
+        { lat: 72, lng: 36, distance: 1e5 },
+        { lat: 79, lng: 30, distance: 1e5 }
+      ],
+      { mode: 'earth', constrain: false }
+    )
+  );
+</script>
