@@ -18,17 +18,33 @@ class Point {
 
   sum(other) {
     if (other instanceof Point) {
-      return new Point(
-        this.x + other.x,
-        this.y + other.y,
-        this.z + other.z
-      );
+      return new Point(this.x + other.x, this.y + other.y, this.z + other.z);
     } else {
-      return new Point(
-        this.x + other,
-        this.y + other,
-        this.z + other
-      );
+      return new Point(this.x + other, this.y + other, this.z + other);
+    }
+  }
+
+  sub(other) {
+    if (other instanceof Point) {
+      return new Point(this.x - other.x, this.y - other.y, this.z - other.z);
+    } else {
+      return new Point(this.x - other, this.y - other, this.z - other);
+    }
+  }
+
+  mult(other) {
+    if (other instanceof Point) {
+      return new Point(this.x * other.x, this.y * other.y, this.z * other.z);
+    } else {
+      return new Point(this.x * other, this.y * other, this.z * other);
+    }
+  }
+
+  div(other) {
+    if (other instanceof Point) {
+      return new Point(this.x / other.x, this.y / other.y, this.z / other.z);
+    } else {
+      return new Point(this.x / other, this.y / other, this.z / other);
     }
   }
 

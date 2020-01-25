@@ -34,7 +34,7 @@
     "prepare": "npm run build && npm run minify && npm run build-module"
   },
   "dependencies": {
-    "optimization-js": "^1.5.0"
+    "fmin": "^0.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.8.3",

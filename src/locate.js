@@ -1,4 +1,4 @@
-import { minimize_Powell } from 'optimization-js';
+import fmin from 'fmin';
 import minimize_cobyla from './3rdparty/jscobyla/index';
 
 import { Earth, Point, Circle } from './geometry';
@@ -16,6 +16,7 @@ const sumErrors = (x, pnts, radii, mode) => {
   for (let i = 0, l = pnts.length; i < l; i++) {
     e += (dist(x, pnts[i].std(), mode) - radii[i]) ** 2;
   }
+  // console.log({ x: JSON.stringify(x), e });
   return e;
 };
 
@@ -36,16 +37,15 @@ function lseFind(circles, mode='2d', constrain = false) {
   const sumR = sum(radii);
   const weights = radii.map(r => (sumR - r) / ((numPnts - 1) * sumR));
 
-  let p0 = new Point(0, 0, 0); // Starting point
-  for (let i = 0; i < numPnts; i++) {
-    p0 = p0.sum(weights[i]).sum(pnts[i]);
-  }
+  let p0 = new Point(0, 0, 0); // Starting point: weighted centroid of all pnts
+  for (let i = 0; i < numPnts; i++) { p0 = p0.sum(pnts[i].mult(weights[i])) }
 
-  const x0 = p0.std();
+  const x0 = p0.std().slice(0, mode === '3d' ? 3 : 2);
 
   let answer;
   if (constrain) {
     // console.info('GC-LSE geolocating...');
+
     if (!isDisjoint(circles, mode === 'earth')) {
       const constrainFn = (x, beaconIdx) => radii[beaconIdx] - dist(x, pnts[beaconIdx].std(), mode);
 
@@ -72,8 +72,9 @@ function lseFind(circles, mode='2d', constrain = false) {
     }
   } else {
     // console.info('LSE geolocating...');
-    const res = minimize_Powell(x => sumErrors(x, pnts, radii, mode), x0);
-    answer = res.argument;
+
+    const res = fmin.nelderMead(x => sumErrors(x, pnts, radii, mode), x0, { maxIterations: 100 });
+    answer = res.x;
   }
 
   return new Point(...answer);
