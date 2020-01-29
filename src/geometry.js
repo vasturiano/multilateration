@@ -65,7 +65,7 @@ class Circle {
     this.r = +r; // num
   }
 
-  touch(o, earthSurface = 0) {
+  touch(o, earthSurface = false) {
     const d = this.c.dist(o.c);
     const met = !earthSurface
       ? this.r + o.r
