@@ -68,17 +68,13 @@ const calcStartingCoords = (circles, geometry) => {
     wCentroid = wCentroid.sum(c.mult(weight));
   });
 
-  const p0 =
-    smallestCircleC.dist(wCentroid) <= smallestCircleR
-      ? wCentroid // pick weighted centroid if it's included within the smallest circle radius
-      : smallestCircleC.sum(
-          new Point(
-            // jiggle it within the smallest circle radius
-            ...[...new Array(3)].map(
-              () => (Math.random() * 2 - 1) * smallestCircleR * 0.7
-            )
-          )
-        );
+  // pick weighted centroid if it's included within the smallest circle radius,
+  // otherwise go as far in that direction as ~90% of the smallest radius allows
+  const radRatio = Math.min(
+    1,
+    (smallestCircleR / smallestCircleC.dist(wCentroid)) * 0.9
+  );
+  const p0 = wCentroid.mult(radRatio).sum(smallestCircleC.mult(1 - radRatio));
 
   return p0.std().slice(0, geometry === '3d' ? 3 : 2);
 };
@@ -111,12 +107,15 @@ const isPntInOverlapArea = (pnt, circles, geometry) => {
   return containedInCircles(pntData, circleData);
 };
 
-function findCoords(circles, { geometry = '2d', method = 'lse' }) {
+function findCoords(
+  circles,
+  { geometry = '2d', method = 'lse', maxIterations = 100 }
+) {
   if (method === 'lse') {
     return fmin(
       coords => calcSumErrors(coords, 1, circles, geometry),
       calcStartingCoords(circles, geometry),
-      { maxIterations: 100 }
+      { maxIterations }
     ).x;
   } else if (method === 'lseInside') {
     if (isDisjoint(circles, geometry === 'earth')) {
@@ -140,7 +139,7 @@ function findCoords(circles, { geometry = '2d', method = 'lse' }) {
         return calcSumErrors(coords, radiusProportion, circles, geometry);
       },
       [1, ...startingCoords],
-      { maxIterations: 100 }
+      { maxIterations }
     ).x;
 
     return coordsLse;
@@ -151,14 +150,21 @@ function findCoords(circles, { geometry = '2d', method = 'lse' }) {
         return area > 0 ? area : Infinity;
       },
       [1],
-      { maxIterations: 100 }
+      { maxIterations }
     ).x;
 
     return calcIntersectionCentroid(minRadiusProportion, circles, geometry);
   }
 }
 
-function locate(beacons, { geometry = '2d', method = 'lse' } = {}) {
+function locate(
+  beacons,
+  { geometry = '2d', method = 'lse', ...passThroughOpts } = {}
+) {
+  if (beacons.length < 2) {
+    throw new Error(`Please provide at least two beacons`);
+  }
+
   if (!['2d', '3d', 'earth'].includes(geometry)) {
     throw new Error(`Unsupported geometry: ${geometry}`);
   }
@@ -178,7 +184,11 @@ function locate(beacons, { geometry = '2d', method = 'lse' } = {}) {
     return new Circle(c, distance); // in Earth mode, gcd distances are specified in meters
   });
 
-  const [x, y, z] = findCoords(circles, { geometry, method });
+  const [x, y, z] = findCoords(circles, {
+    geometry,
+    method,
+    ...passThroughOpts
+  });
 
   if (geometry === 'earth') {
     let lng = x;
