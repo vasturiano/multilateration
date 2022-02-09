@@ -3,27 +3,27 @@ multilateration
 
 [![NPM package][npm-img]][npm-url]
 [![Build Size][build-size-img]][build-size-url]
-[![Dependencies][dependencies-img]][dependencies-url]
+[![NPM Downloads][npm-downloads-img]][npm-downloads-url]
 
 <-- description -->.
 
 ## Quick start
 
-```
+```js
 import locate from 'multilateration';
 ```
 or
-```
+```js
 const locate = require('multilateration');
 ```
 or even
-```
+```html
 <script src="//unpkg.com/multilateration"></script>
 ```
 
 ## Usage example
 
-```
+```js
 const myVar = new locate();
 ...
 ```
@@ -44,9 +44,9 @@ const myVar = new locate();
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=L398E7PKP47E8&currency_code=USD&source=url) If this project has helped you and you'd like to contribute back, you can always [buy me a ☕](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=L398E7PKP47E8&currency_code=USD&source=url)!
 
-[npm-img]: https://img.shields.io/npm/v/multilateration.svg
+[npm-img]: https://img.shields.io/npm/v/multilateration
 [npm-url]: https://npmjs.org/package/multilateration
-[build-size-img]: https://img.shields.io/bundlephobia/minzip/multilateration.svg
+[build-size-img]: https://img.shields.io/bundlephobia/minzip/multilateration
 [build-size-url]: https://bundlephobia.com/result?p=multilateration
-[dependencies-img]: https://img.shields.io/david/vasturiano/multilateration.svg
-[dependencies-url]: https://david-dm.org/vasturiano/multilateration
+[npm-downloads-img]: https://img.shields.io/npm/dt/multilateration
+[npm-downloads-url]: https://www.npmtrends.com/multilateration
