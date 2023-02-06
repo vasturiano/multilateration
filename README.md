@@ -12,11 +12,7 @@ multilateration
 ```js
 import locate from 'multilateration';
 ```
-or
-```js
-const locate = require('multilateration');
-```
-or even
+or using a *script* tag
 ```html
 <script src="//unpkg.com/multilateration"></script>
 ```
