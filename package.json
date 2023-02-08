@@ -1,6 +1,6 @@
 {
   "name": "multilateration",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Locate points according to distributed beacon signals with consistent propagation speeds",
   "license": "MIT",
   "type": "module",
